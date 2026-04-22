@@ -1,0 +1,64 @@
+:root {
+  /* Backgrounds */
+  --bg-page:      #0b0b18;
+  --bg-surface:   #111122;
+  --bg-elevated:  #181830;
+
+  /* Borders */
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong:  rgba(255, 255, 255, 0.24);
+
+  /* Text */
+  --text-primary:   #e0e0f8;
+  --text-secondary: #8080b0;
+  --text-muted:     #5050a0;
+
+  /* Brand */
+  --purple:    #7c4dff;
+  --purple-lt: #b090ff;
+  --teal:      #00c8a0;
+  --amber:     #f0a020;
+
+  /* Semantic */
+  --win:  #22c55e;
+  --loss: #ef4444;
+  --info: #3b82f6;
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:   150ms;
+  --duration-normal: 300ms;
+  --duration-slow:   600ms;
+
+  /* Radius */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-pill: 9999px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    'Apple Color Emoji', 'Segoe UI Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
