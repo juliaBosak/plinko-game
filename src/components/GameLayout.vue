@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlinkoCanvas from './PlinkoCanvas.vue';
 import RowsSlider from './RowsSlider.vue';
+import DropButton from './DropButton.vue';
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import RowsSlider from './RowsSlider.vue';
       <aside class="sidebar">
         <div class="panel-inner">
           <RowsSlider />
+          <DropButton />
         </div>
       </aside>
 

@@ -1,7 +1,14 @@
-export type GameState = 'idle' | 'dropping' | 'settling' | 'result';
+import type { Graphics } from 'pixi.js';
 
-export function isIdleGameState(s: GameState): s is 'idle' {
-  return s === 'idle';
+export enum GameState {
+  Idle     = 'idle',
+  Dropping = 'dropping',
+  Settling = 'settling',
+  Result   = 'result',
+}
+
+export function isIdleGameState(s: GameState): s is GameState.Idle {
+  return s === GameState.Idle;
 }
 
 export interface Point {
@@ -20,6 +27,18 @@ export interface RoundResult {
 /** String key for a peg's position in the grid: "row-col" */
 export type PegKey = `${number}-${number}`;
 
+export interface ActiveBall {
+  sprite: Graphics
+  waypoints: Point[];
+  /** Index of the segment currently being traversed (0 = drop→firstPeg). */
+  wpIdx: number;
+  /** 0..1 progress within the current segment. */
+  progress: number;
+  speed: number;
+  finalBin: number;
+  settled: boolean;
+}
+
 export interface Geometry {
   pegSpacingX: number
   pegSpacingY: number
@@ -30,11 +49,3 @@ export interface Geometry {
   bucketY: number
 }
 
-export interface ActiveBall {
-  waypoints: Point[]
-  wpIdx: number
-  progress: number
-  speed: number
-  finalBin: number
-  settled: boolean
-}
