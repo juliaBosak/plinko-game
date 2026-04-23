@@ -29,6 +29,7 @@ describe('computePath', () => {
 
   it('contains only 0s and 1s', () => {
     const path = computePath(16);
+
     expect(path.every(v => v === 0 || v === 1)).toBe(true);
   });
 
@@ -49,6 +50,7 @@ describe('computePath', () => {
       const rows = 12;
       const path = computePath(rows);
       const bin = path.reduce((a, b) => a + b, 0);
+
       expect(bin).toBeGreaterThanOrEqual(0);
       expect(bin).toBeLessThanOrEqual(rows);
     }
@@ -59,6 +61,7 @@ describe('buildWaypoints', () => {
   it('returns rows + 2 waypoints', () => {
     for (const rows of [8, 10, 12, 16]) {
       const path = Array(rows).fill(0);
+
       expect(buildWaypoints(path, rows, G)).toHaveLength(rows + 2);
     }
   });
@@ -66,6 +69,7 @@ describe('buildWaypoints', () => {
   it('first waypoint is the drop point above origin', () => {
     const rows = 8;
     const pts = buildWaypoints(Array(rows).fill(0), rows, G);
+
     expect(pts[0]!.x).toBe(G.originX);
     expect(pts[0]!.y).toBe(G.originY - G.pegSpacingY * 0.8);
   });
@@ -77,6 +81,7 @@ describe('buildWaypoints', () => {
     const last = pts[pts.length - 1]!;
     // bin 0 → x = originX + (0 - rows/2) * pegSpacingX
     const expectedX = G.originX + (0 - rows / 2) * G.pegSpacingX;
+
     expect(last.x).toBeCloseTo(expectedX, 5);
   });
 
@@ -87,6 +92,7 @@ describe('buildWaypoints', () => {
     const last = pts[pts.length - 1]!;
     // bin rows → x = originX + (rows - rows/2) * pegSpacingX
     const expectedX = G.originX + (rows - rows / 2) * G.pegSpacingX;
+
     expect(last.x).toBeCloseTo(expectedX, 5);
   });
 
@@ -94,6 +100,7 @@ describe('buildWaypoints', () => {
     const rows = 10;
     const path = Array(rows).fill(0);
     const pts = buildWaypoints(path, rows, G);
+
     for (let i = 1; i < pts.length; i++) {
       expect(pts[i]!.y).toBeGreaterThan(pts[i - 1]!.y);
     }
@@ -107,12 +114,14 @@ describe('easeInOutQuad', () => {
 
   it('is symmetric around 0.5', () => {
     const t = 0.3;
+
     expect(easeInOutQuad(t)).toBeCloseTo(1 - easeInOutQuad(1 - t), 10);
   });
 
   it('is always in range [0, 1] for t in [0, 1]', () => {
     for (let t = 0; t <= 1; t += 0.1) {
       const v = easeInOutQuad(t);
+
       expect(v).toBeGreaterThanOrEqual(0);
       expect(v).toBeLessThanOrEqual(1);
     }

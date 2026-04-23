@@ -1,3 +1,7 @@
+// Ball colours
+export const BALL_COLOR     = 0x7c4dff;
+export const BALL_HIGHLIGHT = 0xb89dff;
+
 // Peg state colors (PixiJS hex numbers)
 export const PEG_DEFAULT  = 0xd0d0e0;
 

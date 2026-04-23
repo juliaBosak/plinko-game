@@ -6,6 +6,7 @@ import {
   MAX_PEG_SPACING_Y,
   BUCKET_H, BUCKET_GAP,
 } from '@/constants/layout';
+import { BALL_RADIUS_FACTOR } from '@/constants/ball';
 import type { Geometry, Point } from '@/types/plinko';
 
 /**
@@ -24,7 +25,7 @@ export function computeGeometry(canvasW: number, canvasH: number, rows: number):
   const pegSpacingY = Math.min(availH / rows, MAX_PEG_SPACING_Y);
 
   const pegRadius  = Math.max(3, Math.min(6, pegSpacingX * 0.18));
-  const ballRadius = pegSpacingX * 0.30;
+  const ballRadius = pegRadius * BALL_RADIUS_FACTOR;
 
   const originX = canvasW / 2;
   const originY = PAD_TOP;

@@ -1,4 +1,4 @@
-import type { Graphics } from 'pixi.js';
+import type { Graphics, Sprite } from 'pixi.js';
 
 export enum GameState {
   Idle     = 'idle',
@@ -31,6 +31,14 @@ export type PegKey = `${number}-${number}`;
 
 export interface ActiveBall {
   sprite: Graphics
+  /** Three ghost Sprites trailing behind the ball. */
+  trail: Sprite[];
+  /** Ring-buffer storing the last TRAIL_COUNT ball positions. */
+  trailPositions: Point[];
+  /** Ring-buffer write head. */
+  trailHead: number;
+  /** PegKey at each waypoint index (null for drop-point and bucket waypoints). */
+  pegKeys: Array<PegKey | null>;
   waypoints: Point[];
   /** Index of the segment currently being traversed (0 = drop→firstPeg). */
   wpIdx: number;
@@ -39,6 +47,11 @@ export interface ActiveBall {
   speed: number;
   finalBin: number;
   settled: boolean;
+  /**
+   * Milliseconds remaining before this ball starts animating.
+   * While > 0 the sprite is hidden and stepBall is skipped.
+   */
+  delayMs: number;
 }
 
 export interface Geometry {
