@@ -32,6 +32,7 @@ export function buildWaypoints(path: number[], rows: number, g: Geometry): Point
 
   // Row 0: ball falls straight down from the drop point.
   const firstPeg = pegPosition(0, 0, g);
+
   pts.push({ x: firstPeg.x, y: firstPeg.y - contactDist });
 
   // Subsequent pegs: approach direction = (±pegSpacingX/2, +pegSpacingY).
@@ -41,6 +42,7 @@ export function buildWaypoints(path: number[], rows: number, g: Geometry): Point
 
   for (let row = 1; row < rows; row++) {
     col += path[row - 1]!;
+
     const peg = pegPosition(row, col, g);
 
     // Approach vector from the previous peg toward the current peg centre.

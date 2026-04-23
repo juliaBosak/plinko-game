@@ -31,7 +31,8 @@ onUnmounted(() => {
 <style scoped>
 .pixi-host {
   width: 100%;
-  height: 500px;
+  height: clamp(500px, 60vh, 700px);
+  height: clamp(500px, 60dvh, 700px);
   flex-shrink: 0;
   display: block;
   overflow: hidden;
@@ -43,9 +44,19 @@ onUnmounted(() => {
   display: block;
 }
 
+/* ── Mobile wide  480–767px ───────────────────────── */
 @media (max-width: 767px) {
   .pixi-host {
-    height: 420px;
+    height: clamp(320px, 60vh, 520px);
+    height: clamp(320px, 60dvh, 520px);
+  }
+}
+
+/* ── Mobile compact  < 480px ──────────────────────── */
+@media (max-width: 479px) {
+  .pixi-host {
+    height: clamp(280px, 55vh, 420px);
+    height: clamp(280px, 55dvh, 420px);
   }
 }
 </style>

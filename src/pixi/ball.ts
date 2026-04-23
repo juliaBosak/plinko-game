@@ -29,7 +29,7 @@ export function buildBallTexture(app: Application, radius: number): Texture {
   g.circle(
     radius * BALL_HIGHLIGHT_OFFSET,
     radius * BALL_HIGHLIGHT_OFFSET,
-    radius * BALL_HIGHLIGHT_RADIUS,
+    radius * BALL_HIGHLIGHT_RADIUS
   ).fill({ color: BALL_HIGHLIGHT, alpha: BALL_HIGHLIGHT_ALPHA });
 
   const tex = app.renderer.generateTexture({ target: g, padding: 1 });
@@ -49,7 +49,7 @@ export function createBall(radius: number): Graphics {
   g.circle(
     radius * BALL_HIGHLIGHT_OFFSET,
     radius * BALL_HIGHLIGHT_OFFSET,
-    radius * BALL_HIGHLIGHT_RADIUS,
+    radius * BALL_HIGHLIGHT_RADIUS
   ).fill({ color: BALL_HIGHLIGHT, alpha: BALL_HIGHLIGHT_ALPHA });
 
   return g;
@@ -113,7 +113,7 @@ export function makeActiveBall(
   waypoints: Point[],
   pegKeys: Array<PegKey | null>,
   finalBin: number,
-  delayMs = 0,
+  delayMs = 0
 ): ActiveBall {
   return {
     sprite,
@@ -183,7 +183,8 @@ export function stepBall(
     // factor that controls how fast the segment is traversed.
     b.sprite.x = lerp(from.x, to.x, t);
     b.sprite.y = lerp(from.y, to.y, t ** BALL_FREE_FALL_EXPONENT);
-  } else {
+  }
+  else {
     // Peg-to-peg: constant horizontal speed + parabolic bounce arc on y.
     // sin(π·t) peaks at t=0.5, so the ball lifts off the first peg surface,
     // arcs upward to the midpoint, then falls onto the next peg surface.

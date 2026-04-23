@@ -19,6 +19,7 @@ import type { PegTextures } from '@/pixi/pegTextures';
 import { PegStateController } from '@/pixi/pegStates';
 import { ParticleSystem } from '@/pixi/particles';
 import { flashBucket, spawnWinText } from '@/pixi/effects';
+import { useSound } from '@/composables/useSound';
 import type { Texture } from 'pixi.js';
 
 /**
@@ -29,10 +30,17 @@ import type { Texture } from 'pixi.js';
  */
 export function usePlinkoBoard() {
   const store = usePlinkoStore();
+  const sound = useSound();
 
   let app: Application | null              = null;
   let layers: Layers | null               = null;
   let canvasResizeObserver: ResizeObserver | null = null;
+
+  /**
+   * Set to true by the ResizeObserver when the canvas is resized while a ball
+   * is in flight.  Flushed (triggers a redraw) when the game returns to idle.
+   */
+  let pendingRedraw = false;
 
   let pegTextures: PegTextures | null     = null;
   let ballTexture: Texture | null         = null;
@@ -142,6 +150,7 @@ export function usePlinkoBoard() {
       // Count down spawn delay — keep the sprite hidden until it expires.
       if (ball.delayMs > 0) {
         ball.delayMs -= ticker.deltaMS;
+
         if (ball.delayMs <= 0) {
           ball.delayMs       = 0;
           ball.sprite.visible = true;
@@ -153,13 +162,21 @@ export function usePlinkoBoard() {
         ball,
         ticker.deltaTime,
         (p, wpIdx) => {
-          // Peg hit: light up peg + spawn sparks
+          // Peg hit: light up peg + spawn sparks + play pitched sound
           const key = ball.pegKeys[wpIdx];
           if (key) pegStates?.setActive(key);
           particleSystem?.spawnHitSparks(p);
+
+          // Pitch increases as the ball descends (wpIdx 1 = top, rows = bottom).
+          // Formula from UI spec §9.3: basePitch + (row / totalRows) * 0.4 + jitter
+          const pegRow   = wpIdx - 1; // wpIdx 0 is the drop point, 1 is first peg
+          const rowRatio = store.rows > 0 ? Math.max(0, pegRow) / store.rows : 0;
+          const pitch    = 1.0 + rowRatio * 0.4 + (Math.random() * 0.05);
+
+          sound.play('peg_hit', pitch);
         },
         (bin) => {
-          // Ball settled: flash bucket + floating win text + store update
+          // Ball settled: flash bucket + floating win text + sounds + store update
           if (app && boardState && currentGeometry) {
             flashBucket(bin, app, boardState.bucketSprites);
 
@@ -168,6 +185,11 @@ export function usePlinkoBoard() {
             const pos    = bucketCenter(bin, store.rows, currentGeometry);
 
             spawnWinText(payout, store.betAmount, pos, app, layers!.ui);
+
+            if (mult >= 1) {
+              sound.play('bucket_land');
+              sound.play('balance_update');
+            }
           }
 
           store.onBallLanded(bin);
@@ -220,9 +242,14 @@ export function usePlinkoBoard() {
 
     app.ticker.add(tick);
 
-    // Redraw on container resize (only when idle — no ball in flight).
+    // Redraw on container resize.  While dropping, set a pending flag instead —
+    // the board geometry must stay frozen until the ball settles.
     canvasResizeObserver = new ResizeObserver(() => {
-      if (!isIdleGameState(store.gameState)) return;
+      if (!isIdleGameState(store.gameState)) {
+        pendingRedraw = true;
+
+        return;
+      }
       redraw();
     });
     canvasResizeObserver.observe(hostEl);
@@ -230,7 +257,21 @@ export function usePlinkoBoard() {
     // Redraw on rows change (only when idle).
     watch(() => store.rows, () => {
       if (!isIdleGameState(store.gameState)) return;
+      pendingRedraw = false; // row change covers any pending resize
       redraw();
+    });
+
+    // When the game returns to idle, flush any pending row-change or resize.
+    watch(() => store.gameState, (state) => {
+      if (!isIdleGameState(state)) return;
+      const hadRowChange = store.pendingRowChange !== null;
+
+      store.flushPendingRowChange(); // updates store.rows → triggers rows watcher → redraw
+
+      if (pendingRedraw && !hadRowChange) {
+        redraw();
+      }
+      pendingRedraw = false;
     });
   }
 

@@ -24,6 +24,13 @@ export const usePlinkoStore = defineStore('plinko', {
 
     /** Tracks how many balls are still animating — used to defer idle transition. */
     _ballsInFlight: 0,
+
+    /**
+     * When setRows() is called while dropping, the target row count is queued
+     * here.  usePlinkoBoard flushes this via flushPendingRowChange() once all
+     * balls have settled and the game returns to idle.
+     */
+    pendingRowChange: null as number | null,
   }),
 
   getters: {
@@ -37,8 +44,23 @@ export const usePlinkoStore = defineStore('plinko', {
 
   actions: {
     setRows(n: number) {
-      if (!isIdleGameState(this.gameState)) return;
-      this.rows = Math.max(ROWS_MIN, Math.min(ROWS_MAX, n));
+      const clamped = Math.max(ROWS_MIN, Math.min(ROWS_MAX, n));
+
+      if (!isIdleGameState(this.gameState)) {
+        // Queue the change; usePlinkoBoard will apply it after ball settles.
+        this.pendingRowChange = clamped;
+
+        return;
+      }
+      this.rows = clamped;
+    },
+
+    /** Called by usePlinkoBoard when the game returns to idle. */
+    flushPendingRowChange() {
+      if (this.pendingRowChange !== null) {
+        this.rows = this.pendingRowChange;
+        this.pendingRowChange = null;
+      }
     },
 
     setBetAmount(n: number) {
@@ -112,5 +134,6 @@ export const usePlinkoStore = defineStore('plinko', {
         }, 300);
       }
     },
+
   },
 });

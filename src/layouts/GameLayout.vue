@@ -82,4 +82,11 @@ import PlinkoCanvas from '@/components/PlinkoCanvas.vue';
     flex: 0 0 auto;
   }
 }
+
+/* ── Mobile compact < 480px — single-column panel ── */
+@media (max-width: 479px) {
+  .sidebar {
+    overflow-y: visible;
+  }
+}
 </style>
