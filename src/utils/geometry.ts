@@ -15,7 +15,7 @@ import type { Geometry, Point } from '@/types/plinko';
  * The canvas height is treated as fixed (500 px by default).  Peg spacing is
  * derived so that every row fits inside the available vertical space above the
  * multiplier bucket strip, and so the grid never stretches horizontally beyond
- * MAX_PEG_SPACING_X.  The grid is always centred.
+ * MAX_PEG_SPACING_X. The grid is always centred.
  */
 export function computeGeometry(canvasW: number, canvasH: number, rows: number): Geometry {
   const pegSpacingX = Math.min((canvasW - PAD_X * 2) / (rows + 1), MAX_PEG_SPACING_X);
