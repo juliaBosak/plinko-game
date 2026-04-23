@@ -29,14 +29,14 @@ export function buildWaypoints(path: number[], rows: number, g: Geometry): Point
 
   // Each subsequent peg: deflection at the previous peg shifts col left/right
   let col = 0;
+
   for (let row = 1; row < rows; row++) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     col += path[row - 1]!;
     pts.push(pegPosition(row, col, g));
   }
 
   // Last deflection (at the bottom-row peg) determines the landing bin
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   col += path[rows - 1]!;
   pts.push(bucketCenter(col, rows, g));
 

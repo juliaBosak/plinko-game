@@ -2,14 +2,15 @@ import { Graphics } from 'pixi.js';
 import type { ActiveBall, Point } from '@/types/plinko';
 import { easeInOutQuad, lerp } from '@/utils/physics';
 
-
 const BASE_SPEED = 4.5; // segments per second at row 0
 
 /** Draws a solid purple ball slightly larger than the pegs. */
 export function createBall(radius: number): Graphics {
   const r = radius;
   const g = new Graphics();
+
   g.circle(0, 0, r).fill({ color: 0x7c4dff });
+
   return g;
 }
 
@@ -17,7 +18,7 @@ export function createBall(radius: number): Graphics {
 export function makeActiveBall(
   sprite: Graphics,
   waypoints: Point[],
-  finalBin: number,
+  finalBin: number
 ): ActiveBall {
   return {
     sprite,
@@ -41,7 +42,7 @@ export function stepBall(
   b: ActiveBall,
   dt: number,
   onPeg: (p: Point, wpIdx: number) => void,
-  onSettle: (bin: number) => void,
+  onSettle: (bin: number) => void
 ): void {
   if (b.settled) return;
 
@@ -56,25 +57,24 @@ export function stepBall(
 
     // Has the ball reached the final bucket waypoint?
     if (b.wpIdx >= b.waypoints.length - 1) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const last = b.waypoints[b.waypoints.length - 1]!;
+
       b.sprite.x = last.x;
       b.sprite.y = last.y;
       b.settled = true;
       onSettle(b.finalBin);
+
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     onPeg(b.waypoints[b.wpIdx]!, b.wpIdx);
   }
 
   // Interpolate sprite position within the current segment
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const from = b.waypoints[b.wpIdx]!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const to   = b.waypoints[b.wpIdx + 1]!;
   const t    = easeInOutQuad(b.progress);
+
   b.sprite.x = lerp(from.x, to.x, t);
   b.sprite.y = lerp(from.y, to.y, t);
 }

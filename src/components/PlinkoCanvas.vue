@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { useTemplateRef, onMounted, onUnmounted } from 'vue';
 import { usePlinkoBoard } from '@/composables/usePlinkoBoard';
+import { usePlinkoStore } from '@/stores/plinkoStore';
 
-const host = ref<HTMLDivElement | null>(null);
-const { mount, unmount } = usePlinkoBoard();
+const host = useTemplateRef<HTMLDivElement>('host');
+const { mount, unmount, spawnBalls } = usePlinkoBoard();
+const store = usePlinkoStore();
+
+const stopWatchingDropBallAction = store.$onAction(({ name, after }) => {
+  if (name !== 'dropBall') return;
+  after((paths) => {
+    if (paths) spawnBalls(paths);
+  });
+});
 
 onMounted(async () => {
   if (host.value) await mount(host.value);
 });
 
 onUnmounted(() => {
+  stopWatchingDropBallAction();
   unmount();
 });
 </script>

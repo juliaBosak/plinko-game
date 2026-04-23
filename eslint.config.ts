@@ -22,6 +22,13 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
 
   {
+    name: 'app/typescript-rules',
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+
+  {
     name: 'app/stylistic-rules',
     plugins: {
       '@stylistic': stylistic,

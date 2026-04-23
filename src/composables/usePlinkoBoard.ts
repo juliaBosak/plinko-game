@@ -22,10 +22,29 @@ export function usePlinkoBoard() {
 
   let app: Application | null    = null;
   let layers: Layers | null      = null;
-  let ro: ResizeObserver | null  = null;
-  let unsubAction: (() => void) | null = null;
+  let canvasResizeObserver: ResizeObserver | null = null;
 
   const activeBalls: ActiveBall[] = [];
+
+  /** Spawns a ball sprite for each path returned by the dropBall action. */
+  function spawnBalls(paths: number[][]) {
+    if (!app || !layers) return;
+    const geometry = computeGeometry(app.screen.width, app.screen.height, store.rows);
+
+    for (const path of paths) {
+      const waypoints = buildWaypoints(path, store.rows, geometry);
+      const finalBin  = path.reduce((s, v) => s + v, 0);
+
+      const sprite = createBall(geometry.ballRadius);
+
+      // buildWaypoints always produces rows+2 points (rows ≥ 8), so index 0 is safe
+      sprite.x = waypoints[0]!.x;
+      sprite.y = waypoints[0]!.y;
+      layers.ball.addChild(sprite);
+
+      activeBalls.push(makeActiveBall(sprite, waypoints, finalBin));
+    }
+  }
 
   /** Redraw using current canvas dimensions from the renderer. */
   function redraw() {
@@ -35,14 +54,13 @@ export function usePlinkoBoard() {
       store.rows,
       app.screen.width,
       app.screen.height,
-      store.multipliers,
+      store.multipliers
     );
   }
 
   /** Per-frame ticker callback — steps every active ball and cleans up settled ones. */
   function tick(ticker: Ticker) {
     for (let i = activeBalls.length - 1; i >= 0; i--) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ball = activeBalls[i]!;
 
       stepBall(
@@ -54,7 +72,7 @@ export function usePlinkoBoard() {
         },
         (bin) => {
           store.onBallLanded(bin);
-        },
+        }
       );
 
       if (ball.settled) {
@@ -96,33 +114,12 @@ export function usePlinkoBoard() {
     // Ticker loop for ball animation
     app.ticker.add(tick);
 
-    // Spawn a ball whenever dropBall() is called on the store
-    unsubAction = store.$onAction(({ name, after }) => {
-      if (name !== 'dropBall') return;
-      after((path) => {
-        if (!path || !app || !layers) return;
-        const g         = computeGeometry(app.screen.width, app.screen.height, store.rows);
-        const waypoints = buildWaypoints(path, store.rows, g);
-        const finalBin  = path.reduce((s, v) => s + v, 0);
-
-        const sprite = createBall(g.ballRadius);
-        // buildWaypoints always produces rows+2 points (rows ≥ 8), so index 0 is safe
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        sprite.x = waypoints[0]!.x;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        sprite.y = waypoints[0]!.y;
-        layers.ball.addChild(sprite);
-
-        activeBalls.push(makeActiveBall(sprite, waypoints, finalBin));
-      });
-    });
-
     // Redraw whenever the container resizes (only when idle — no ball in flight)
-    ro = new ResizeObserver(() => {
+    canvasResizeObserver = new ResizeObserver(() => {
       if (!isIdleGameState(store.gameState)) return;
       redraw();
     });
-    ro.observe(hostEl);
+    canvasResizeObserver.observe(hostEl);
 
     // Redraw whenever rows change (only when idle)
     watch(() => store.rows, () => {
@@ -131,13 +128,10 @@ export function usePlinkoBoard() {
     });
   }
 
-  /** Unmount: tear down Pixi, ResizeObserver, and action subscription. */
+  /** Unmount: tear down Pixi and ResizeObserver. */
   function unmount() {
-    unsubAction?.();
-    unsubAction = null;
-
-    ro?.disconnect();
-    ro = null;
+    canvasResizeObserver?.disconnect();
+    canvasResizeObserver = null;
 
     // Destroy any balls still in flight
     for (const ball of activeBalls) {
@@ -149,7 +143,7 @@ export function usePlinkoBoard() {
       app.ticker.remove(tick);
       app.destroy(
         { removeView: true },
-        { children: true, texture: true, textureSource: true },
+        { children: true, texture: true, textureSource: true }
       );
       app = null;
     }
@@ -158,5 +152,5 @@ export function usePlinkoBoard() {
 
   onScopeDispose(unmount);
 
-  return { mount, unmount };
+  return { mount, unmount, spawnBalls };
 }

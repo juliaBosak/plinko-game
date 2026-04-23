@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { usePlinkoStore } from '@/stores/plinkoStore';
-import { isIdleGameState } from '@/types/plinko';
+import { formatUSD, round2 } from '@/utils/money';
 
 const store = usePlinkoStore();
 
-const isDisabled = computed(() => !isIdleGameState(store.gameState));
+const isDisabled = computed(() => !store.canDrop);
+
+const label = computed(() => {
+  const n = store.ballsPerDrop;
+
+  return `DROP ${n} BALL${n > 1 ? 'S' : ''}`;
+});
+
+const subLabel = computed(() =>
+  formatUSD(round2(store.betAmount * store.ballsPerDrop))
+);
 
 function onClick() {
   store.dropBall();
@@ -19,7 +29,8 @@ function onClick() {
     :disabled="isDisabled"
     @click="onClick"
   >
-    <span class="label">DROP BALL</span>
+    <span class="label">{{ label }}</span>
+    <span class="sub-label">{{ subLabel }}</span>
   </button>
 </template>
 
@@ -65,5 +76,11 @@ function onClick() {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.sub-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
 }
 </style>

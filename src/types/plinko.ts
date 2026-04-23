@@ -4,7 +4,7 @@ export enum GameState {
   Idle     = 'idle',
   Dropping = 'dropping',
   Settling = 'settling',
-  Result   = 'result',
+  Result   = 'result'
 }
 
 export function isIdleGameState(s: GameState): s is GameState.Idle {
@@ -22,6 +22,8 @@ export interface RoundResult {
   bet: number
   payout: number
   ts: number
+  /** How many balls were dropped in this round — same on every entry of the round. */
+  roundSize: number
 }
 
 /** String key for a peg's position in the grid: "row-col" */
@@ -48,4 +50,3 @@ export interface Geometry {
   originY: number
   bucketY: number
 }
-
