@@ -1,6 +1,7 @@
 import type { Sprite } from 'pixi.js';
 import type { PegKey } from '@/types/plinko';
 import type { PegTextures } from './pegTextures';
+import { PEG_ACTIVE_DURATION, PEG_HIT_BLUE_DURATION, PEG_HIT_GREEN_DURATION } from '@/constants/ball';
 
 type PegState = 'default' | 'active' | 'hitBlue' | 'hitGreen';
 
@@ -9,11 +10,6 @@ interface PegEntry {
   state: PegState;
   elapsed: number; // ms elapsed in the current state
 }
-
-// Timing thresholds (milliseconds)
-const ACTIVE_DURATION    = 80;   // gold → blue  (roughly 1 frame at 60 fps + margin)
-const HIT_BLUE_DURATION  = 600;  // blue  → green
-const HIT_GREEN_DURATION = 900;  // green → default  (total lifetime ≈ 1 580 ms)
 
 /**
  * Manages per-peg visual state for the whole board.
@@ -86,17 +82,17 @@ export class PegStateController {
 
       entry.elapsed += deltaMS;
 
-      if (entry.state === 'active' && entry.elapsed >= ACTIVE_DURATION) {
+      if (entry.state === 'active' && entry.elapsed >= PEG_ACTIVE_DURATION) {
         entry.state   = 'hitBlue';
         entry.elapsed = 0;
         entry.sprite.texture = this._textures.hitBlue;
       }
-      else if (entry.state === 'hitBlue' && entry.elapsed >= HIT_BLUE_DURATION) {
+      else if (entry.state === 'hitBlue' && entry.elapsed >= PEG_HIT_BLUE_DURATION) {
         entry.state   = 'hitGreen';
         entry.elapsed = 0;
         entry.sprite.texture = this._textures.hitGreen;
       }
-      else if (entry.state === 'hitGreen' && entry.elapsed >= HIT_GREEN_DURATION) {
+      else if (entry.state === 'hitGreen' && entry.elapsed >= PEG_HIT_GREEN_DURATION) {
         entry.state   = 'default';
         entry.elapsed = 0;
         entry.sprite.texture = this._textures.default;

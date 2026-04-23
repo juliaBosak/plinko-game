@@ -98,3 +98,8 @@ export const BALL_HIGHLIGHT_RADIUS = 0.45;
  *   1.0 → bright solid highlight
  */
 export const BALL_HIGHLIGHT_ALPHA = 0.6;
+
+// Peg hit-state timing thresholds (milliseconds)
+export const PEG_ACTIVE_DURATION    = 80;   // gold  → blue  (roughly 1 frame at 60 fps + margin)
+export const PEG_HIT_BLUE_DURATION  = 300;  // blue  → green
+export const PEG_HIT_GREEN_DURATION = 600;  // green → default  (total lifetime ≈ 1 580 ms)

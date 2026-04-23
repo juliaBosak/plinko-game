@@ -1,15 +1,11 @@
 import { defineStore } from 'pinia';
 import { MULTIPLIERS } from '@/constants/multipliers';
 import { ROWS_MIN, ROWS_MAX } from '@/constants/layout';
+import { MAX_HISTORY, INITIAL_BALANCE, MIN_BET, MAX_BALLS } from '@/constants/game';
 import { computePath } from '@/utils/physics';
 import { round2 } from '@/utils/money';
 import { GameState, isIdleGameState } from '@/types/plinko';
 import type { RoundResult } from '@/types/plinko';
-
-const MAX_HISTORY = 20;
-const INITIAL_BALANCE = 1000;
-const MIN_BET = 0.01;
-const MAX_BALLS = 10;
 
 export const usePlinkoStore = defineStore('plinko', {
   state: () => ({
@@ -64,9 +60,7 @@ export const usePlinkoStore = defineStore('plinko', {
     },
 
     setBetAmount(n: number) {
-      const clamped = Math.max(MIN_BET, Math.min(this.balance, n));
-
-      this.betAmount = round2(clamped);
+      this.betAmount = round2(n);
     },
 
     setBallsPerDrop(n: number) {

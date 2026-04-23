@@ -56,10 +56,6 @@ src/
 │   ├── RowsSlider.vue       # 8–16 rows slider
 │   ├── BalanceDisplay.vue   # Animated balance counter
 │   ├── LastResultBadge.vue  # Last-payout multiplier badge
-│   └── modals/
-│       ├── ModalBase.vue         # Teleport backdrop + card + Esc key close
-│       ├── ModalBigWin.vue       # Animated count-up, confetti burst, auto-close
-│       └── ModalInsufficient.vue # "Insufficient balance" error dialog
 │
 ├── composables/
 │   ├── usePlinkoBoard.ts    # PixiJS lifecycle, ball spawning, resize, ticker

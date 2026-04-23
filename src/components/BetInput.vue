@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePlinkoStore } from '@/stores/plinkoStore';
+import { MIN_BET } from '@/constants/game';
 import { round2 } from '@/utils/money';
 import { isIdleGameState } from '@/types/plinko';
 
@@ -11,8 +12,13 @@ const { setBetAmount } = store;
 
 const isDisabled = computed(() => !isIdleGameState(gameState.value));
 
+const inputValue = computed({
+  get: () => betAmount.value,
+  set: (v) => { if (!isNaN(v)) setBetAmount(v); },
+});
+
 const errorMsg = computed<string | null>(() => {
-  if (betAmount.value < 0.01) return 'Min bet is $0.01';
+  if (betAmount.value < MIN_BET) return `Min bet is $${MIN_BET}`;
   if (betAmount.value > balance.value) return 'Insufficient balance';
 
   return null;
@@ -20,13 +26,8 @@ const errorMsg = computed<string | null>(() => {
 
 const isInvalid = computed(() => errorMsg.value !== null);
 
-function onInput(e: Event) {
-  const raw = parseFloat((e.target as HTMLInputElement).value);
-  if (!isNaN(raw)) setBetAmount(raw);
-}
-
 function half() {
-  setBetAmount(round2(Math.max(0.01, betAmount.value / 2)));
+  setBetAmount(round2(Math.max(MIN_BET, betAmount.value / 2)));
 }
 
 function double() {
@@ -49,12 +50,11 @@ function max() {
       <input
         type="number"
         class="bet-field"
-        :value="betAmount"
+        v-model="inputValue"
         :disabled="isDisabled"
-        min="0.01"
+        :min="MIN_BET"
         :max="balance"
         step="0.01"
-        @input="onInput"
       />
     </div>
 
@@ -126,6 +126,7 @@ function max() {
   font-weight: 600;
   padding: 10px 0;
   min-width: 0;
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
