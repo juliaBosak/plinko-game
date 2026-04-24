@@ -74,7 +74,7 @@ export function drawBoard(
   layers.buckets.removeChildren().forEach(c => c.destroy());
 
   const bucketW      = geometry.pegSpacingX - 4;
-  const fontSize     = Math.max(7, Math.min(13, bucketW * 0.28));
+  const fontSize     = Math.max(8, Math.min(13, bucketW * 0.28));
   const bucketRadius = 5;
 
   const labelStyle = new TextStyle({

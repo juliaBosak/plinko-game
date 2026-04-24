@@ -16,7 +16,7 @@ export const MAX_PEG_SPACING_X = 50;
 
 export const MAX_PEG_SPACING_Y = 56;
 
-export const BUCKET_H   = 32;  // height of each multiplier bucket box (px)
+export const BUCKET_H   = 24;  // height of each multiplier bucket box (px)
 
 export const BUCKET_GAP = 8;   // gap between last peg row and bucket boxes (px)
 
